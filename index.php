@@ -1,9 +1,4 @@
 <?php 
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'todolist');
-define('DB_HOST', '127.0.0.1');
-define('DB_PORT', '3306');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -19,18 +14,39 @@ define('DB_PORT', '3306');
       <h3 class="navbar-brand" href="#">TodoList</h3>
     </div>
   </nav>
+ <form action="">
   <div class="mb-3 container mt-5 mb-5 d-flex gap-2" style="width: 450px;">
     <input type="text" class="form-control" placeholder="Task Title" aria-label="Example text with two button addons">
     <button class="btn btn-primary" type="button">Add</button>
   </div>
   <div class="result-list container" style="width: 750px;">
-    <div class="alert alert-primary done d-flex align-items-center justify-content-between" role="alert">
-        <p class="mb-0">A simple primary alert—check it out!</p>
-        <div class="btns">
-            <button class="btn btn-success">Undo</button>
-            <button class="btn btn-danger">x</button>
-        </div>
-    </div>
+
+
+  <?php
+    include 'connectiondb.php';
+
+    try {
+        $stmt = $conn->query("SELECT * FROM tasks");
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $task_id = $row['id'];
+            $completed = $row['completed'] ? 'checked' : '';
+            echo "
+               <div class='alert $completed d-flex align-items-center justify-content-between' role='alert' id='$task_id'>
+            <p class='mb-0'>". htmlspecialchars($row['task']). "</p>
+            <div class='btns'>
+                <button class='btn btn-primary' type='submit'>Undo</button>
+                <button class='btn btn-danger' type='submit'>x</button>
+            </div>
+            </div>
+            ";
+        }
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
+
+    $conn = null;
+    ?>
   </div>
+ </form>
 </body>
 </html>
